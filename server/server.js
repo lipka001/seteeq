@@ -3,7 +3,6 @@ const bodyParser = require('body-parser');
 const app = express(); 
 const cors = require('cors');
 const utils = require('./utils');
-const create = require('./create');
 
 const rubbersColumns =  [
   'IdRubberTypeFK',

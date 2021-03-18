@@ -1,21 +1,21 @@
 import React, {useEffect, useState} from "react";
-import { fetchData, addRows } from './utils';
+import { fetchData, addRows } from '../../Services/utils';
 import axios from 'axios';
 
 import { DataGrid } from '@material-ui/data-grid';
 import TextField from '@material-ui/core/TextField';
-import CrudButtons from './CrudButtons';
+import CrudButtons from '../CrudButtons';
+import Toolbar from "../Toolbar"
 
-function Manufacturers() {
-  const hostPath = 'http://localhost:8000';
-  const basePath = 'manufac';
+import hostPath from '../../Services/constant'
+import ClearButton from "../ClearButton";
+
+function DriveTypes({ isAdmin }) {
+  const basePath = 'drive-types';
 
   const defaultValues = {
-    IdManufacturer: '',
-    ManufacturerName: '',
-    URL: '',
-    Email: '',
-    Phone: '',
+    IdDriveType: '',
+    NameDriveType: '',
   }
 
   const columnsNames = Object.keys(defaultValues).map(k => k);
@@ -23,11 +23,8 @@ function Manufacturers() {
   const [ values, setValues ] = useState(null);
   const [ selected, setSelected ] = useState(defaultValues);
   const columns = [
-    {field: 'IdManufacturer', headerName: 'IdManufacturer', flex: 1},
-    {field: 'ManufacturerName', headerName: 'ManufacturerName', flex: 5},
-    {field: 'URL', headerName: 'URL', flex: 5},
-    {field: 'Email', headerName: 'Email', flex: 5},
-    {field: 'Phone', headerName: 'Phone', flex: 5},
+    {field: 'IdDriveType', headerName: 'IdDriveType', flex: 1},
+    {field: 'NameDriveType', headerName: 'NameDriveType', flex: 5},
   ]
 
   useEffect(() => {
@@ -73,7 +70,7 @@ function Manufacturers() {
 
   const handleDelete = () => {
     axios
-      .put(`${hostPath}/${basePath}/delete`, { IdManufacturer: selected.IdManufacturer })
+      .put(`${hostPath}/${basePath}/delete`, { IdDriveType: selected.IdDriveType })
       .then(() => {
         console.log(`Row removed.`)
         fetchData(`/${basePath}/all`, setValues);
@@ -83,20 +80,20 @@ function Manufacturers() {
   }
 
   return(
-    <div style={{height: '80vh', width: '70vw'}}> 
-      <DataGrid rows={rows} columns={columns} autoPageSize onCellClick={(cell) => setSelected(cell.row)}/>
-      <form noValidate autoComplete="off" style={{ display: 'flex', flexDirection: 'column',  width: '25vw' }}>
-        <TextField label="ManufacturerName" value={selected.ManufacturerName} onChange={e => handleChange(e, 'ManufacturerName')}/>
-        <TextField label="URL" value={selected.URL} onChange={e => handleChange(e, 'URL')}/>
-        <TextField label="Email" value={selected.Email} onChange={e => handleChange(e, 'Email')}/>
-        <TextField label="Phone" value={selected.Phone} onChange={e => handleChange(e, 'Phone')}/>
-        <CrudButtons
+    <div className="table__container"> 
+      <DataGrid disableColumnMenu={isAdmin} components={!isAdmin ? { Toolbar } : null} className="table__table" rows={rows} columns={columns} autoPageSize onCellClick={(cell) => setSelected(cell.row)}/>
+      {isAdmin && <form className="table__form" noValidate autoComplete="off">
+        <ClearButton
+          setSelected={setSelected}
+          defaultValues={defaultValues}/>
+        <TextField label="NameDriveType" value={selected.NameDriveType} onChange={e => handleChange(e, 'NameDriveType')}/>
+         <CrudButtons
             handleDelete={handleDelete}
             handleCreate={handleCreate}
             handleUpdate={handleUpdate}/>
-      </form>
+      </form>}
     </div>
     )
 }
 
-export default Manufacturers;
+export default DriveTypes;

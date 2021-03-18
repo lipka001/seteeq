@@ -1,13 +1,16 @@
 import React, {useEffect, useState} from "react";
-import { fetchData, addRows } from './utils';
+import { fetchData, addRows } from '../../Services/utils';
 import axios from 'axios';
 
 import { DataGrid } from '@material-ui/data-grid';
 import TextField from '@material-ui/core/TextField';
-import CrudButtons from './CrudButtons';
+import CrudButtons from '../CrudButtons';
+import ClearButton from "../ClearButton";
+import Toolbar from "../Toolbar"
 
-function MixDevs() {
-  const hostPath = 'http://localhost:8000';
+import hostPath from '../../Services/constant'
+
+function MixDevs({ isAdmin }) {
   const basePath = 'mixdev';
 
   const defaultValues = {
@@ -77,15 +80,18 @@ function MixDevs() {
   }
 
   return(
-    <div style={{height: '80vh', width: '70vw'}}> 
-      <DataGrid rows={rows} columns={columns} autoPageSize onCellClick={(cell) => setSelected(cell.row)}/>
-      <form noValidate autoComplete="off" style={{ display: 'flex', flexDirection: 'column',  width: '25vw' }}>
+    <div className="table__container"> 
+      <DataGrid disableColumnMenu={isAdmin} components={!isAdmin ? { Toolbar } : null} className="table__table" rows={rows} columns={columns} autoPageSize onCellClick={(cell) => setSelected(cell.row)}/>
+      {isAdmin && <form className="table__form" noValidate autoComplete="off" style={{ display: 'flex', flexDirection: 'column',  width: '25vw' }}>
+      <ClearButton
+          setSelected={setSelected}
+          defaultValues={defaultValues}/>
         <TextField label="MixingDeviceTypeName" value={selected.MixingDeviceTypeName} onChange={e => handleChange(e, 'MixingDeviceTypeName')}/>
         <CrudButtons
             handleDelete={handleDelete}
             handleCreate={handleCreate}
             handleUpdate={handleUpdate}/>
-      </form>
+      </form>}
     </div>
     )
 }

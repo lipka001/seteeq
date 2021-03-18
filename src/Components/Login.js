@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
+import axios from 'axios';
+
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
-import axios from 'axios';
+import Tables from './Tables';
 
-import Admin from './Admin';
-import User from './User'
+import hostPath from '../Services/constant'
 
 export default function Login() {
-  const hostPath = 'http://localhost:8000';
   const [ login, setLogin ] = useState("");
   const [ pass, setPass ] = useState("");
   const [ user, setUser ] = useState(null);
@@ -23,20 +23,22 @@ export default function Login() {
         setUser(response.data)
       })
       .catch(error => console.error(`There was an error: ${error}`))
+    setLogin("")
+    setPass("")
   }
 
   if (!user) {
     return (
-      <div>
+      <div className="card-container">
           <form onSubmit={handleSubmit}>
-          <Card style={{height: '27vh', width: '20vw'}}>
-          <CardContent>
-              <p style={{fontSize: '1.5rem'}}>Вход в базу данных</p>
-            <TextField label="Логин" style={{width: '100%'}} value={login} onChange={(e) => setLogin(e.target.value)}/>
-            <TextField label="Пароль" style={{width: '100%'}} value={pass} onChange={(e) => setPass(e.target.value)}/>
+          <Card className="card">
+          <CardContent className="card__content">
+              <p className="card__text">Вход в базу данных</p>
+            <TextField className="card__field" label="Логин" value={login} onChange={(e) => setLogin(e.target.value)}/>
+            <TextField className="card__field" label="Пароль" value={pass} onChange={(e) => setPass(e.target.value)}/>
           </CardContent>
-          <CardActions>
-              <Button variant="contained" color="primary" type="submit" disableElevation>Войти</Button>
+          <CardActions className="card__actions">
+              <Button className="card__btn" variant="contained" color="primary" type="submit" disableElevation>Войти</Button>
           </CardActions>
           </Card>
           </form>
@@ -44,7 +46,7 @@ export default function Login() {
     );
   } else {
     return (
-    <Admin isAdmin={user.IdUserTypeFK === 1} setUser={setUser}/>
+    <Tables isAdmin={user.IdUserTypeFK === 1} setUser={setUser}/>
     )
   }
 }

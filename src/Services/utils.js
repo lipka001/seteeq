@@ -1,7 +1,8 @@
 import axios from 'axios';
 
+import hostPath from './constant'
+
 export const fetchData = async (path, set) => {
-    const hostPath = 'http://localhost:8000';
 
     axios
       .get(`${hostPath}${path}`)

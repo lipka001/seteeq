@@ -1,13 +1,16 @@
 import React, {useEffect, useState} from "react";
-import { fetchData, addRows } from './utils';
+import { fetchData, addRows } from '../../Services/utils';
 import axios from 'axios';
 
 import { DataGrid } from '@material-ui/data-grid';
 import TextField from '@material-ui/core/TextField';
-import CrudButtons from "./CrudButtons";
+import CrudButtons from "../CrudButtons";
+import ClearButton from "../ClearButton";
+import Toolbar from "../Toolbar"
 
-function Rubbers() {
-  const hostPath = 'http://localhost:8000';
+import hostPath from '../../Services/constant'
+
+function Rubbers({ isAdmin }) {
   const basePath = 'rubbers';
   const defaultValues = {
     IdRubber: '',
@@ -115,9 +118,12 @@ function Rubbers() {
   }
 
   return(
-    <div style={{height: '80vh', width: '70vw'}}> 
-      <DataGrid rows={rows} columns={columns} autoPageSize onCellClick={(cell) => setSelected(cell.row)}/>
-      <form noValidate autoComplete="off" style={{ display: 'flex', flexDirection: 'column',  width: '25vw' }}>
+    <div className="table__container"> 
+      <DataGrid disableColumnMenu={isAdmin} components={!isAdmin ? { Toolbar } : null} className="table__table" rows={rows} columns={columns} autoPageSize onCellClick={(cell) => setSelected(cell.row)}/>
+      {isAdmin && <form className="table__form" noValidate autoComplete="off" >
+      <ClearButton
+          setSelected={setSelected}
+          defaultValues={defaultValues}/>
         <TextField label="IdRubberTypeFK" value={selected.IdRubberTypeFK} onChange={e => handleChange(e, 'IdRubberTypeFK')}/>
         <TextField label="RubberName" value={selected.RubberName} onChange={e => handleChange(e, 'RubberName')}/>
         <TextField label="Density" value={selected.Density} onChange={e => handleChange(e, 'Density')}/>
@@ -142,7 +148,7 @@ function Rubbers() {
             handleDelete={handleDelete}
             handleCreate={handleCreate}
             handleUpdate={handleUpdate}/>
-      </form>
+      </form> }
     </div>
     )
 }

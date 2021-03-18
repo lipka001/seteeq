@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import './App.css';
 
-import Login from './Login'
+import Login from './Components/Login'
 
 function App() {
 

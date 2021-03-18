@@ -1,21 +1,18 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState } from 'react';
 
 import Button from '@material-ui/core/Button';
-import { DataGrid } from '@material-ui/data-grid';
-import TextField from '@material-ui/core/TextField';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Box from '@material-ui/core/Box';
-import RubberGenTypes from './RubberGenTypes';
-import RubbersTypes from './RubbersTypes';
-import Rubbers from './Rubbers';
-import Users from './Users';
-import UserTypes from './UserTypes';
-import Manufacturers from './Manufacturers'
-import MixDevs from './MixDevs'
-import DriveTypes from './DriveTypes';
-import Reactors from './Reactors';
+import RubberGenTypes from './Tables/RubberGenTypes';
+import RubbersTypes from './Tables/RubbersTypes';
+import Rubbers from './Tables/Rubbers';
+import Users from './Tables/Users';
+import UserTypes from './Tables/UserTypes';
+import Manufacturers from './Tables/Manufacturers'
+import MixDevs from './Tables/MixDevs'
+import DriveTypes from './Tables/DriveTypes';
+import Reactors from './Tables/Reactors';
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -29,7 +26,7 @@ function TabPanel(props) {
       {...other}
     >
       {value === index && (
-        <Box p={3} style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-around' }}>
+        <Box p={3} style={{ display: 'flex', flexDirection: 'row'}}>
           {children}
         </Box>
       )}
@@ -46,8 +43,10 @@ function Admin({ setUser, isAdmin }) {
   };
 
   return (
-    <div>
-      <Button variant="contained" color="secondary" onClick={() => setUser(null)}>Выйти</Button>
+    <div className="tables">
+      <div className="tables__header">
+        <Button variant="contained" color="secondary" onClick={() => setUser(null)}>Выход</Button>
+      </div>
       <Tabs
         orientation="horizontal"
         value={valueTab}
@@ -57,8 +56,8 @@ function Admin({ setUser, isAdmin }) {
         <Tab label="Типы назначений каучуков" value={1}/>
         <Tab label="Типы каучуков" value={2}/>
         <Tab label="Каучуки" value={3}/>
-        <Tab label="Пользователи" value={4}/>
-        <Tab label="Типы пользователей" value={5}/>
+        {isAdmin && <Tab label="Пользователи" value={4}/>}
+        {isAdmin && <Tab label="Типы пользователей" value={5}/>}
         <Tab label="Производители" value={6}/>
         <Tab label="Смешивающие устройства" value={7}/>
         <Tab label="Приводы" value={8}/>

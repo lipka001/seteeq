@@ -1,39 +1,87 @@
-.App {
-  text-align: center;
-  height: 100vh;
+.card-container {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: url(./img/background.jpg); 
+    background-size: 100%;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.card {
+    width: 350px;
+    height: 250px;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.card__content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+.card__actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
-.App-link {
-  color: #61dafb;
+.card__text {
+    font-size: 1.1rem;
+    padding: 0;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.tables__header {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: center;
+    height: 60px;
+    background-color: #3f51b5;
+    padding-right: 50px;
+}
+
+.table__container {
+    width: 100vw;
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+.table__table {
+    margin-right: 50px;
+}
+
+.crud-btn[class] {
+    margin-top: 10px;
+    width: 15vw;
+}
+  
+.crud-btns {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.table__form .MuiFormControl-root {
+    width: 20vw;
+}
+
+.table__form {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.reset-btn {
+    width: 30px;
+    padding: 0;
+    height: 40px;
+}
+
+.reset-btn img {
+    width: 25px;
+    height: 25px;
 }

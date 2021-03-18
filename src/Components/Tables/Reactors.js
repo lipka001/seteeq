@@ -1,13 +1,16 @@
 import React, {useEffect, useState} from "react";
-import { fetchData, addRows } from './utils';
+import { fetchData, addRows } from '../../Services/utils';
 import axios from 'axios';
 
 import { DataGrid } from '@material-ui/data-grid';
 import TextField from '@material-ui/core/TextField';
-import CrudButtons from './CrudButtons';
+import CrudButtons from '../CrudButtons';
+import ClearButton from "../ClearButton";
+import Toolbar from "../Toolbar"
 
-function Reactors() {
-  const hostPath = 'http://localhost:8000';
+import hostPath from '../../Services/constant'
+
+function Reactors({ isAdmin }) {
   const basePath = 'reactors';
 
   const defaultValues = {
@@ -33,19 +36,19 @@ function Reactors() {
   const [ selected, setSelected ] = useState(defaultValues);
   const columns = [
     {field: 'IdReactor', headerName: 'IdReactor', flex: 1},
-    {field: 'IdDriveTypeFK', headerName: 'IdDriveTypeFK', flex: 5},
-    {field: 'IdMixingDeviceTypeFK', headerName: 'IdMixingDeviceTypeFK', flex: 5},
-    {field: 'IdManufacturerFK', headerName: 'IdManufacturerFK', flex: 5},
-    {field: 'NominalVolume', headerName: 'NominalVolume', flex: 5},
-    {field: 'JacketVolume', headerName: 'JacketVolume', flex: 5},
-    {field: 'WeightWithoutLiquid', headerName: 'WeightWithoutLiquid', flex: 5},
-    {field: 'PowerOutput', headerName: 'PowerOutput', flex: 5},
-    {field: 'RotationSpeed', headerName: 'RotationSpeed', flex: 5},
-    {field: 'HousingPressure', headerName: 'HousingPressure', flex: 5},
-    {field: 'JacketPressure', headerName: 'JacketPressure', flex: 5},
-    {field: 'Height', headerName: 'Height', flex: 5},
-    {field: 'Width', headerName: 'Width', flex: 5},
-    {field: 'ElectricMotorBrand', headerName: 'ElectricMotorBrand', flex: 5},
+    {field: 'IdDriveTypeFK', headerName: 'IdDriveTypeFK', width: 200},
+    {field: 'IdMixingDeviceTypeFK', headerName: 'IdMixingDeviceTypeFK', width: 200},
+    {field: 'IdManufacturerFK', headerName: 'IdManufacturerFK', width: 200},
+    {field: 'NominalVolume', headerName: 'NominalVolume', width: 200},
+    {field: 'JacketVolume', headerName: 'JacketVolume', width: 200},
+    {field: 'WeightWithoutLiquid', headerName: 'WeightWithoutLiquid', width: 200},
+    {field: 'PowerOutput', headerName: 'PowerOutput', width: 200},
+    {field: 'RotationSpeed', headerName: 'RotationSpeed', width: 200},
+    {field: 'HousingPressure', headerName: 'HousingPressure', width: 200},
+    {field: 'JacketPressure', headerName: 'JacketPressure', width: 200},
+    {field: 'Height', headerName: 'Height', width: 200},
+    {field: 'Width', headerName: 'Width', width: 200},
+    {field: 'ElectricMotorBrand', headerName: 'ElectricMotorBrand', width: 200},
   ]
 
   useEffect(() => {
@@ -101,9 +104,12 @@ function Reactors() {
   }
 
   return(
-    <div style={{height: '80vh', width: '70vw'}}> 
-      <DataGrid rows={rows} columns={columns} autoPageSize onCellClick={(cell) => setSelected(cell.row)}/>
-      <form noValidate autoComplete="off" style={{ display: 'flex', flexDirection: 'column',  width: '25vw' }}>
+    <div className="table__container"> 
+      <DataGrid disableColumnMenu={isAdmin} components={!isAdmin ? { Toolbar } : null} className="table__table" rows={rows} columns={columns} autoPageSize onCellClick={(cell) => setSelected(cell.row)}/>
+      {isAdmin && <form className="table__form" noValidate autoComplete="off" style={{ display: 'flex', flexDirection: 'column',  width: '25vw' }}>
+      <ClearButton
+          setSelected={setSelected}
+          defaultValues={defaultValues}/>
         <TextField label="IdDriveTypeFK" value={selected.IdDriveTypeFK} onChange={e => handleChange(e, 'IdDriveTypeFK')}/>
         <TextField label="IdMixingDeviceTypeFK" value={selected.IdMixingDeviceTypeFK} onChange={e => handleChange(e, 'IdMixingDeviceTypeFK')}/>
         <TextField label="IdManufacturerFK" value={selected.IdManufacturerFK} onChange={e => handleChange(e, 'IdManufacturerFK')}/>
@@ -121,7 +127,7 @@ function Reactors() {
             handleDelete={handleDelete}
             handleCreate={handleCreate}
             handleUpdate={handleUpdate}/>
-      </form>
+      </form>}
     </div>
     )
 }
