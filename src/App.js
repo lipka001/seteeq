@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import './App.css';
-import axios from 'axios';
 
-import User from './User'
+import Login from './Login'
 
 function App() {
 
+  const isAdmin = true;
 
   return (
     <div className="App">
-      <User/>
+      <Login/>
     </div>
   );
 }
