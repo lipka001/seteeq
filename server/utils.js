@@ -1,4 +1,5 @@
 const knex = require('./db/db');
+const SHA256 = require("crypto-js/sha256");
 
 exports.selectAll = async (req, res, table) => {
     knex
@@ -26,6 +27,9 @@ exports.delete = async (req, res, table, tableId) => {
 
 exports.add = async (req, res, table, tableFields) => {
   const data = tableFields.reduce((acc,curr)=> (acc[curr] = req.body[curr],acc),{});
+  if (data.Pass) {
+    data.Pass = SHA256(data.Pass);
+  }
   knex(table)
   .insert(data)
   .then(() => {

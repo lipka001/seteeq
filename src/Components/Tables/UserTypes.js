@@ -6,6 +6,8 @@ import { DataGrid } from '@material-ui/data-grid';
 import TextField from '@material-ui/core/TextField';
 import CrudButtons from '../CrudButtons';
 import ClearButton from "../ClearButton";
+import Alert from '@material-ui/lab/Alert';
+import Snackbar from '@material-ui/core/Snackbar';
 
 import hostPath from '../../Services/constant'
 
@@ -22,8 +24,8 @@ function UserTypes() {
   const [ values, setValues ] = useState(null);
   const [ selected, setSelected ] = useState(defaultValues);
   const columns = [
-    {field: 'IdUserType', headerName: 'IdUserType', flex: 1},
-    {field: 'UserTypeName', headerName: 'UserTypeName', flex: 5},
+    {field: 'IdUserType', headerName: 'ID типа пользователя', flex: 1},
+    {field: 'UserTypeName', headerName: 'Тип пользователя', flex: 5},
   ]
 
   useEffect(() => {
@@ -40,7 +42,14 @@ function UserTypes() {
   };
 
   const handleCreate = () => {
-    if (Object.keys(selected).map(k => selected.k)) {
+    let error = false;
+    Object.keys(selected).forEach(k => { 
+      if (!selected[k] && k !== 'IdUserType') {
+        error = true;
+      }
+    });
+
+    if (!error) {
       const data = columnsNames.reduce((acc,curr)=> (acc[curr] = selected[curr],acc),{});
       axios
       .post(`${hostPath}/${basePath}/create`, data)
@@ -50,11 +59,20 @@ function UserTypes() {
         setSelected(defaultValues);
       })
       .catch(error => console.error(`There was an error: ${error}`))
+    } else {
+      setIsError(true);
     }
   }
 
   const handleUpdate = () => {
-    if (Object.keys(selected).map(k => selected.k)) {
+    let error = false;
+    Object.keys(selected).forEach(k => { 
+      if (!selected[k] && k !== 'IdUserType') {
+        error = true;
+      }
+    });
+
+    if (!error) {
       const data = columnsNames.reduce((acc,curr)=> (acc[curr] = selected[curr],acc),{});
       axios
       .put(`${hostPath}/${basePath}/update`, data)
@@ -64,6 +82,8 @@ function UserTypes() {
         setSelected(defaultValues);
       })
       .catch(error => console.error(`There was an error: ${error}`))
+    } else {
+      setIsError(true);
     }
   }
 
@@ -78,14 +98,28 @@ function UserTypes() {
       .catch(error => console.error(`There was an error ${error}`))
   }
 
+  const [isError, setIsError] = useState(false);
+
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setIsError(false);
+  };
+
   return(
     <div className="table__container"> 
+      <Snackbar open={isError} autoHideDuration={6000} onClose={handleClose}>
+        <Alert onClose={handleClose} severity="error">
+          Некорректно заполнены поля ввода
+        </Alert>
+      </Snackbar>
       <DataGrid disableColumnMenu className="table__table" rows={rows} columns={columns} autoPageSize onCellClick={(cell) => setSelected(cell.row)}/>
       <form className="table__form" noValidate autoComplete="off" >
       <ClearButton
           setSelected={setSelected}
           defaultValues={defaultValues}/>
-        <TextField label="UserTypeName" value={selected.UserTypeName} onChange={e => handleChange(e, 'UserTypeName')}/>
+        <TextField label="Тип пользователя" value={selected.UserTypeName} onChange={e => handleChange(e, 'UserTypeName')}/>
         <CrudButtons
             handleDelete={handleDelete}
             handleCreate={handleCreate}

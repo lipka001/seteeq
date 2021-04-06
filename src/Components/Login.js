@@ -10,6 +10,8 @@ import Tables from './Tables';
 
 import hostPath from '../Services/constant'
 
+import CryptoJS from "crypto-js";
+
 export default function Login() {
   const [ login, setLogin ] = useState("");
   const [ pass, setPass ] = useState("");
@@ -17,8 +19,11 @@ export default function Login() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    // const result = SHA256(pass);
+    // const res = result.map(function(e) {return ("0" + (e < 0 ? e + 256 : e).toString(16)).slice(-2)}).join("");
+    // console.lot(result);
     axios
-      .get(`${hostPath}/login`, { params: {Login: login, Pass: pass} })
+      .get(`${hostPath}/login`, { params: {Login: login, Pass: CryptoJS.SHA256(pass).toString()} })
       .then(response => {
         setUser(response.data)
       })

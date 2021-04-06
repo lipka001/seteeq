@@ -85,3 +85,7 @@
     width: 25px;
     height: 25px;
 }
+
+.table__form > label {
+    padding-top: 15px;
+}

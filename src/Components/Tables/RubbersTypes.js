@@ -6,7 +6,12 @@ import { DataGrid } from '@material-ui/data-grid';
 import TextField from '@material-ui/core/TextField';
 import CrudButtons from "../CrudButtons";
 import ClearButton from "../ClearButton";
-import Toolbar from "../Toolbar"
+import Toolbar from "../Toolbar";
+import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
+import InputLabel from '@material-ui/core/InputLabel';
+import Alert from '@material-ui/lab/Alert';
+import Snackbar from '@material-ui/core/Snackbar';
 
 import hostPath from '../../Services/constant'
 
@@ -19,15 +24,17 @@ function RubbersTypes({ isAdmin }) {
   }
   const [ rows,  setRows ] = useState([]);
   const [ values, setValues ] = useState(null);
+  const [ rubGenTypes, setRubGenTypes ] = useState(null);
   const [ selected, setSelected ] = useState(defaultValues);
   const columns = [
-    {field: 'IdRubberType', headerName: 'IdRubberType', flex: 1},
-    {field: 'IdRubberGeneralTypeFK', headerName: 'IdRubberGeneralTypeFK', flex: 5},
-    {field: 'Name', headerName: 'Name', flex: 5},
+    {field: 'IdRubberType', headerName: 'ID типа каучука', flex: 1},
+    {field: 'IdRubberGeneralTypeFK', headerName: 'Тип назначения', flex: 5},
+    {field: 'Name', headerName: 'Наименование типа каучука', flex: 5},
   ]
 
   useEffect(() => {
     fetchData(`/${basePath}/all`, setValues);
+    fetchData(`/rubbers-general-types/all`, setRubGenTypes);
   }, [])
 
   useEffect(() => {
@@ -52,6 +59,8 @@ function RubbersTypes({ isAdmin }) {
         setSelected(defaultValues);
       })
       .catch(error => console.error(`There was an error: ${error}`))
+    } else {
+      setIsError(true);
     }
   }
 
@@ -83,15 +92,37 @@ function RubbersTypes({ isAdmin }) {
       .catch(error => console.error(`There was an error ${error}`))
   }
 
+  const [isError, setIsError] = useState(false);
+
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setIsError(false);
+  };
+
   return(
     <div className="table__container"> 
+      <Snackbar open={isError} autoHideDuration={6000} onClose={handleClose}>
+        <Alert onClose={handleClose} severity="error">
+          Некорректно заполнены поля ввода
+        </Alert>
+      </Snackbar>
       <DataGrid disableColumnMenu={isAdmin} components={!isAdmin ? { Toolbar } : null} className="table__table" rows={rows} columns={columns} autoPageSize onCellClick={(cell) => setSelected(cell.row)}/>
       {isAdmin && <form className="table__form" noValidate autoComplete="off">
       <ClearButton
           setSelected={setSelected}
           defaultValues={defaultValues}/>
-          <TextField label="IdRubberGeneralTypeFK" value={selected.IdRubberGeneralTypeFK} onChange={e => handleChange(e, 'IdRubberGeneralTypeFK')}/>
-          <TextField label="Name" value={selected.Name} onChange={e => handleChange(e, 'Name')}/>
+          <InputLabel id="IdRubberGeneralTypeFKLabel">Тип назначения</InputLabel>
+          <Select
+            labelId="IdRubberGeneralTypeFKLabel"
+            id="IdRubberGeneralTypeFK"
+            value={selected.IdRubberGeneralTypeFK}
+            onChange={e => handleChange(e, 'IdRubberGeneralTypeFK')}
+          >
+            {rubGenTypes && rubGenTypes.map((v, index) => <MenuItem key={index} value={v.IdRubberGeneralType}>{v.NameOfDestination}</MenuItem>)}
+          </Select>
+          <TextField label="Наименование типа каучука" value={selected.Name} onChange={e => handleChange(e, 'Name')}/>
           <CrudButtons
             handleDelete={handleDelete}
             handleCreate={handleCreate}

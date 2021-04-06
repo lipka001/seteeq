@@ -58,7 +58,6 @@ function Admin({ setUser, isAdmin }) {
         <Tab label="Каучуки" value={3}/>
         {isAdmin && <Tab label="Пользователи" value={4}/>}
         {isAdmin && <Tab label="Типы пользователей" value={5}/>}
-        <Tab label="Производители" value={6}/>
         <Tab label="Смешивающие устройства" value={7}/>
         <Tab label="Приводы" value={8}/>
         <Tab label="Реакторы" value={9}/>
@@ -77,9 +76,6 @@ function Admin({ setUser, isAdmin }) {
       </TabPanel>
       <TabPanel value={valueTab} index={5}>
         <UserTypes isAdmin={isAdmin}/>
-      </TabPanel>
-      <TabPanel value={valueTab} index={6}>
-        <Manufacturers isAdmin={isAdmin}/>
       </TabPanel>
       <TabPanel value={valueTab} index={7}>
         <MixDevs isAdmin={isAdmin}/>

@@ -5,8 +5,9 @@ import axios from 'axios';
 import { DataGrid } from '@material-ui/data-grid';
 import TextField from '@material-ui/core/TextField';
 import CrudButtons from '../CrudButtons';
-import Toolbar from "../Toolbar"
-
+import Toolbar from "../Toolbar";
+import Alert from '@material-ui/lab/Alert';
+import Snackbar from '@material-ui/core/Snackbar';
 
 import hostPath from '../../Services/constant'
 import ClearButton from "../ClearButton";
@@ -22,8 +23,8 @@ function RubberGenTypes({ isAdmin }) {
   const [ values, setValues ] = useState(null);
   const [ selected, setSelected ] = useState(defaultValues);
   const columns = [
-    {field: 'IdRubberGeneralType', headerName: 'IdRubberGeneralType', flex: 1},
-    {field: 'NameOfDestination', headerName: 'NameOfDestination', flex: 5},
+    {field: 'IdRubberGeneralType', headerName: 'ID Типа назначения', flex: 1},
+    {field: 'NameOfDestination', headerName: 'Наименование типа назначения', flex: 5},
   ]
 
   useEffect(() => {
@@ -50,6 +51,8 @@ function RubberGenTypes({ isAdmin }) {
         setSelected(defaultValues);
       })
       .catch(error => console.error(`There was an error: ${error}`))
+    } else {
+      setIsError(true);
     }
   }
 
@@ -80,14 +83,28 @@ function RubberGenTypes({ isAdmin }) {
       .catch(error => console.error(`There was an error ${error}`))
   }
 
+  const [isError, setIsError] = useState(false);
+
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setIsError(false);
+  };
+
   return(
     <div className="table__container"> 
+      <Snackbar open={isError} autoHideDuration={6000} onClose={handleClose}>
+        <Alert onClose={handleClose} severity="error">
+          Некорректно заполнены поля ввода
+        </Alert>
+      </Snackbar>
       <DataGrid disableColumnMenu={isAdmin} components={!isAdmin ? { Toolbar } : null} className="table__table" rows={rows} columns={columns} autoPageSize onCellClick={(cell) => setSelected(cell.row)}/>
       {isAdmin &&<form className="table__form" noValidate autoComplete="off">
         <ClearButton
           setSelected={setSelected}
           defaultValues={defaultValues}/>
-        <TextField label="NameOfDestination" value={selected.NameOfDestination} onChange={handleChange('NameOfDestination')}/>
+        <TextField label="Наименование типа назначения" value={selected.NameOfDestination} onChange={handleChange('NameOfDestination')}/>
         <CrudButtons className="table__btns"
             handleDelete={handleDelete}
             handleCreate={handleCreate}

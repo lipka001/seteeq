@@ -6,7 +6,12 @@ import { DataGrid } from '@material-ui/data-grid';
 import TextField from '@material-ui/core/TextField';
 import CrudButtons from '../CrudButtons';
 import ClearButton from "../ClearButton";
-import Toolbar from "../Toolbar"
+import Toolbar from "../Toolbar";
+import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
+import InputLabel from '@material-ui/core/InputLabel';
+import Alert from '@material-ui/lab/Alert';
+import Snackbar from '@material-ui/core/Snackbar';
 
 import hostPath from '../../Services/constant'
 
@@ -17,7 +22,6 @@ function Reactors({ isAdmin }) {
     IdReactor: '',
     IdDriveTypeFK: '',
     IdMixingDeviceTypeFK: '',
-    IdManufacturerFK: '',
     NominalVolume: '',
     JacketVolume: '',
     WeightWithoutLiquid: '',
@@ -35,24 +39,27 @@ function Reactors({ isAdmin }) {
   const [ values, setValues ] = useState(null);
   const [ selected, setSelected ] = useState(defaultValues);
   const columns = [
-    {field: 'IdReactor', headerName: 'IdReactor', flex: 1},
-    {field: 'IdDriveTypeFK', headerName: 'IdDriveTypeFK', width: 200},
-    {field: 'IdMixingDeviceTypeFK', headerName: 'IdMixingDeviceTypeFK', width: 200},
-    {field: 'IdManufacturerFK', headerName: 'IdManufacturerFK', width: 200},
-    {field: 'NominalVolume', headerName: 'NominalVolume', width: 200},
-    {field: 'JacketVolume', headerName: 'JacketVolume', width: 200},
-    {field: 'WeightWithoutLiquid', headerName: 'WeightWithoutLiquid', width: 200},
-    {field: 'PowerOutput', headerName: 'PowerOutput', width: 200},
-    {field: 'RotationSpeed', headerName: 'RotationSpeed', width: 200},
-    {field: 'HousingPressure', headerName: 'HousingPressure', width: 200},
-    {field: 'JacketPressure', headerName: 'JacketPressure', width: 200},
-    {field: 'Height', headerName: 'Height', width: 200},
-    {field: 'Width', headerName: 'Width', width: 200},
-    {field: 'ElectricMotorBrand', headerName: 'ElectricMotorBrand', width: 200},
+    {field: 'IdReactor', headerName: 'ID Реактора', flex: 1},
+    {field: 'IdDriveTypeFK', headerName: 'ID типа привода', width: 200},
+    {field: 'IdMixingDeviceTypeFK', headerName: 'ID смешивающего устройства', width: 200},
+    {field: 'NominalVolume', headerName: 'Номинальный объем, м^3', width: 200},
+    {field: 'JacketVolume', headerName: 'Объем рубашки, м^3', width: 200},
+    {field: 'WeightWithoutLiquid', headerName: 'Масса аппарата без жидкости, кг', width: 200},
+    {field: 'PowerOutput', headerName: 'Мощность, кВт', width: 200},
+    {field: 'RotationSpeed', headerName: 'Частота вращения мешалки, об/мин', width: 200},
+    {field: 'HousingPressure', headerName: 'Давление в корпусе, мПа', width: 200},
+    {field: 'JacketPressure', headerName: 'Давление в рубашке, мПа', width: 200},
+    {field: 'Height', headerName: 'Высота аппарата, мм', width: 200},
+    {field: 'Width', headerName: 'Ширина (диаметр), мм', width: 200},
+    {field: 'ElectricMotorBrand', headerName: 'Марка электродвигателя', width: 200},
   ]
+  const [ mixDev, setMixDev ] = useState(null);
+  const [ drive, setDrive ] = useState(null);
 
   useEffect(() => {
     fetchData(`/${basePath}/all`, setValues);
+    fetchData(`/mixdev/all`, setMixDev);
+    fetchData(`/drive-types/all`, setDrive);
   }, [])
 
   useEffect(() => {
@@ -65,7 +72,18 @@ function Reactors({ isAdmin }) {
   };
 
   const handleCreate = () => {
-    if (Object.keys(selected).map(k => selected.k)) {
+    let error = false;
+    Object.keys(selected).forEach(k => { 
+      if (!selected[k] && k !== "IdReactor") {
+        error = true;
+      }
+    });
+
+    if (!Number(selected.NominalVolume) || !Number(selected.RotationSpeed)|| !Number(selected.JacketVolume) || !Number(selected.WeightWithoutLiquid) || !Number(selected.PowerOutput) || !Number(selected.HousingPressure) || !Number(selected.JacketPressure) || !Number(selected.Height) || !Number(selected.Width)) {
+      error = true;
+    }
+
+    if (!error) {
       const data = columnsNames.reduce((acc,curr)=> (acc[curr] = selected[curr],acc),{});
       axios
       .post(`${hostPath}/${basePath}/create`, data)
@@ -75,11 +93,24 @@ function Reactors({ isAdmin }) {
         setSelected(defaultValues);
       })
       .catch(error => console.error(`There was an error: ${error}`))
+    } else {
+      setIsError(true);
     }
   }
 
   const handleUpdate = () => {
-    if (Object.keys(selected).map(k => selected.k)) {
+    let error = false;
+    Object.keys(selected).forEach(k => { 
+      if (!selected[k] && k !== "IdReactor") {
+        error = true;
+      }
+    });
+
+    if (!Number(selected.NominalVolume) || !Number(selected.RotationSpeed)|| !Number(selected.JacketVolume) || !Number(selected.WeightWithoutLiquid) || !Number(selected.PowerOutput) || !Number(selected.HousingPressure) || !Number(selected.JacketPressure) || !Number(selected.Height) || !Number(selected.Width)) {
+      error = true;
+    }
+
+    if (!error) {
       const data = columnsNames.reduce((acc,curr)=> (acc[curr] = selected[curr],acc),{});
       axios
       .put(`${hostPath}/${basePath}/update`, data)
@@ -89,6 +120,8 @@ function Reactors({ isAdmin }) {
         setSelected(defaultValues);
       })
       .catch(error => console.error(`There was an error: ${error}`))
+    } else {
+      setIsError(true);
     }
   }
 
@@ -103,26 +136,54 @@ function Reactors({ isAdmin }) {
       .catch(error => console.error(`There was an error ${error}`))
   }
 
+  const [isError, setIsError] = useState(false);
+
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setIsError(false);
+  };
+
+
   return(
     <div className="table__container"> 
+      <Snackbar open={isError} autoHideDuration={6000} onClose={handleClose}>
+        <Alert onClose={handleClose} severity="error">
+          Некорректно заполнены поля ввода
+        </Alert>
+      </Snackbar>
       <DataGrid disableColumnMenu={isAdmin} components={!isAdmin ? { Toolbar } : null} className="table__table" rows={rows} columns={columns} autoPageSize onCellClick={(cell) => setSelected(cell.row)}/>
       {isAdmin && <form className="table__form" noValidate autoComplete="off" style={{ display: 'flex', flexDirection: 'column',  width: '25vw' }}>
       <ClearButton
           setSelected={setSelected}
           defaultValues={defaultValues}/>
-        <TextField label="IdDriveTypeFK" value={selected.IdDriveTypeFK} onChange={e => handleChange(e, 'IdDriveTypeFK')}/>
-        <TextField label="IdMixingDeviceTypeFK" value={selected.IdMixingDeviceTypeFK} onChange={e => handleChange(e, 'IdMixingDeviceTypeFK')}/>
-        <TextField label="IdManufacturerFK" value={selected.IdManufacturerFK} onChange={e => handleChange(e, 'IdManufacturerFK')}/>
-        <TextField label="NominalVolume" value={selected.NominalVolume} onChange={e => handleChange(e, 'NominalVolume')}/>
-        <TextField label="JacketVolume" value={selected.JacketVolume} onChange={e => handleChange(e, 'JacketVolume')}/>
-        <TextField label="WeightWithoutLiquid" value={selected.WeightWithoutLiquid} onChange={e => handleChange(e, 'WeightWithoutLiquid')}/>
-        <TextField label="PowerOutput" value={selected.PowerOutput} onChange={e => handleChange(e, 'PowerOutput')}/>
-        <TextField label="RotationSpeed" value={selected.RotationSpeed} onChange={e => handleChange(e, 'RotationSpeed')}/>
-        <TextField label="HousingPressure" value={selected.HousingPressure} onChange={e => handleChange(e, 'HousingPressure')}/>
-        <TextField label="JacketPressure" value={selected.JacketPressure} onChange={e => handleChange(e, 'JacketPressure')}/>
-        <TextField label="Height" value={selected.Height} onChange={e => handleChange(e, 'Height')}/>
-        <TextField label="Width" value={selected.Width} onChange={e => handleChange(e, 'Width')}/>
-        <TextField label="ElectricMotorBrand" value={selected.ElectricMotorBrand} onChange={e => handleChange(e, 'ElectricMotorBrand')}/>
+        <InputLabel id="IdDriveTypeFKLabel">ID типа привода</InputLabel>
+        <Select
+          labelId="IdDriveTypeFKLabel"
+          id="IdDriveTypeFK"
+          value={selected.IdDriveTypeFK}
+          onChange={e => handleChange(e, 'IdDriveTypeFK')}>
+            {drive && drive.map((v, index) => <MenuItem key={index} value={v.IdDriveType}>{v.NameDriveType}</MenuItem>)}
+        </Select>
+        <InputLabel id="IdMixingDeviceTypeFKLabel">ID смешивающего устройства</InputLabel>
+        <Select
+          labelId="IdMixingDeviceTypeFKLabel"
+          id="IdMixingDeviceTypeFK"
+          value={selected.IdMixingDeviceTypeFK}
+          onChange={e => handleChange(e, 'IdMixingDeviceTypeFK')}>
+            {mixDev && mixDev.map((v, index) => <MenuItem key={index} value={v.IdMixingDeviceType}>{v.MixingDeviceTypeName}</MenuItem>)}
+        </Select>
+        <TextField label="Номинальный объем, м^3" value={selected.NominalVolume} onChange={e => handleChange(e, 'NominalVolume')}/>
+        <TextField label="Объем рубашки, м^3" value={selected.JacketVolume} onChange={e => handleChange(e, 'JacketVolume')}/>
+        <TextField label="Масса аппарата без жидкости, кг" value={selected.WeightWithoutLiquid} onChange={e => handleChange(e, 'WeightWithoutLiquid')}/>
+        <TextField label="Мощность, кВт" value={selected.PowerOutput} onChange={e => handleChange(e, 'PowerOutput')}/>
+        <TextField label="Частота вращения мешалки, об/мин" value={selected.RotationSpeed} onChange={e => handleChange(e, 'RotationSpeed')}/>
+        <TextField label="Давление в корпусе, мПа" value={selected.HousingPressure} onChange={e => handleChange(e, 'HousingPressure')}/>
+        <TextField label="Давление в рубашке, мПа" value={selected.JacketPressure} onChange={e => handleChange(e, 'JacketPressure')}/>
+        <TextField label="Высота аппарата, мм" value={selected.Height} onChange={e => handleChange(e, 'Height')}/>
+        <TextField label="Ширина (диаметр), мм" value={selected.Width} onChange={e => handleChange(e, 'Width')}/>
+        <TextField label="Марка электродвигателя" value={selected.ElectricMotorBrand} onChange={e => handleChange(e, 'ElectricMotorBrand')}/>
         <CrudButtons
             handleDelete={handleDelete}
             handleCreate={handleCreate}

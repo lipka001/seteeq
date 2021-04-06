@@ -43,7 +43,6 @@ const manufacColumns = [
 const reactorColumns = [
   'IdDriveTypeFK',
   'IdMixingDeviceTypeFK',
-  'IdManufacturerFK',
   'NominalVolume',
   'JacketVolume',
   'WeightWithoutLiquid',
